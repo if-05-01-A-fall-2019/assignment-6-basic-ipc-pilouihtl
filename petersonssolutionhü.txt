@@ -1,0 +1,28 @@
+1 Race Condition: Eine Race Condition ist ein Zustand, der von der Reihenfolge der Prozesse, die auftreten, abhängt.
+
+2 Disabling Interrupts:
+	i: In multi-processor systems führt jeder Core Code gleichzeitig aus. Wenn also ein Core, Interrupts deaktiviert, kann der Prozess im nächsten Core ausgeführt werden.
+	ii: Der Benutzer kann dann einen ganzen Core besetzen, somit womöglich einen wichtigen.
+3 Peterson's Solution
+	i:	Scenario 1: Process 1 wartet bis Process 0 leave_region() abschließt, um selber enter_region() abzuschließen, da Process 0 ansonsten noch interessiert ist und ausgeführt wird.
+		Scenario 2:Es ist nicht möglich, dass beide gleichzeitig die Befehle ausführen und somit gibt es einen loser. Dieser loser muss warten bis der andere Process leave_region() ausgeführt hat, bevor er selbst weiter laufen kann.
+	ii: Die Strict Alternation failed, wenn einer der beiden Prozesse viel mehr Laufzeit bekommt als der andere. Denn der Prozess mit mehr Laufzeit wartet immer, bis der andere Prozess bei turn=0 oder turn=1 ankommt, da er in der while(turn != 0) bzw while(turn != 1) festhängt.
+	iii: Es hat in der while-Schleife in enter_region() eine Auswirkung. Wenn 2 Prozesse fast gelichzeitig den Code ausführen, ist als erste der Schnellere der loser. Aber wenn der Schnellere dann die while-Schleife anfangen möchte ist der  andere bereits der loser und somit muss der Schnellere Prozess nicht mehr warten und läuft gleich weiter.
+	iv:
+int loser;
+Bool interested[3];
+void enter_region(int process){
+	int i = 0;
+	int a = 0;
+	int[] other = new int[interested.length()];
+	while(i < interested.length()){
+		if(i != process){
+			other[a] = i;
+			a++;
+		}
+		i++;
+	}
+	interested[process] = true;
+	loser = process;
+	while(loser == process && (interested[other[0]] || interested[other[1]])) ;
+}
